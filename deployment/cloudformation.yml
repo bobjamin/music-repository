@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  AppEnv:
+    Type: String
+
+Resources:
+
+  MusicRepoWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub music-repository-${AppEnv}
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - Authorization
+            ExposedHeaders:
+              - Access-Control-Allow-Origin
+            AllowedMethods:
+              - GET
+            AllowedOrigins:
+              - '*'
+            MaxAge: 3000
+
+  MusicRepoWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MusicRepoWebsiteBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action:
+              - s3:Get*
+              - s3:List*
+            Resource: !Sub arn:aws:s3:::${MusicRepoWebsiteBucket}/*
