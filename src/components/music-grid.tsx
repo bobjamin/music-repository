@@ -10,30 +10,45 @@ import MusicPiece from "./music-piece";
 
 const MusicGrid = (props: {pieceSelected: any}) => (
     <div className="grid row col-12">
-        { gridItems((props as any).music, (props as any).thumbnails, props.pieceSelected) }
+        { gridItems((props as any).music, (props as any).thumbnails, props.pieceSelected, (props as any).searchText) }
     </div>
 );
 
-function gridItems(music: Map<Artist, Music[]>, thumbnails: Map<string, string>, pieceSelected: (uid) => void) {
+function filtered(musicList: Music[], artist: Artist, filter: string): Music[]{
+    if(filter && filter != ''){
+        let lowerFilter = filter.toLowerCase();
+        if(artist.name().toLowerCase().indexOf(lowerFilter) != -1) return musicList;
+        else return musicList.filter((piece) => piece.pieceName().toLowerCase().indexOf(lowerFilter) != -1);
+    }
+    return musicList;
+}
+
+function gridItems(music: Map<Artist, Music[]>, thumbnails: Map<string, string>, pieceSelected: (uid) => void, searchText: string) {
     let thumbnailFor = (uid:string) => (thumbnails && thumbnails.has(uid)) ? thumbnails.get(uid): null;
     let items = [];
     if(music) {
         let key = 0;
-        music.forEach((musicList, artist: Artist) => {
-            let itemList = [];
-            items.push(titleElementFor(artist, key++));
-            musicList.forEach((music, index) => itemList.push(
-               <MusicPiece key={artist.lastName + index} text={music.pieceName()} thumbnail={thumbnailFor('' + music.uid)} thumbnailClicked={()=>pieceSelected(music.uid)}/>
-            ));
-            items.push((<div key={'d' + key} className="row">{itemList}</div>));
+        music.forEach((musicList, artist) => {
+            let filteredMusicList = filtered(musicList, artist, searchText);
+            if(filteredMusicList.length > 0) items.push(titleElementFor(artist));
+            items.push(
+                (<div key={artist.uid} className="row">
+                    {filteredMusicList.map((music, index) =>
+                        <MusicPiece
+                            key={music.uid}
+                            text={music.pieceName()}
+                            thumbnail={thumbnailFor('' + music.uid)}
+                            thumbnailClicked={()=>pieceSelected(music.uid)}/>
+                    )}
+                </div>));
         });
     }
     return items;
 }
 
-const titleElementFor = (artist: Artist, key: number) => {
+const titleElementFor = (artist: Artist) => {
     return (
-        <div key={'t' + key} style={{ width: '100%', borderBottom: '1px solid rgb(48, 59, 82)', padding: '10px', paddingTop: '30px', marginLeft: '20px'}}>
+        <div key={artist.uid + 'title'} style={{ width: '100%', borderBottom: '1px solid rgb(48, 59, 82)', padding: '10px', paddingTop: '30px', marginLeft: '20px'}}>
             <h4 style={{ textAlign: 'left' }}>{artist.name()}</h4>
         </div>
     );

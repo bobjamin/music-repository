@@ -12,11 +12,7 @@ export default class Artist {
     }
 
     name(){
-        let name = this.lastName;
-        if(!this.knownByLastName){
-            name = this.firstName +" " + this.lastName;
-        }
-        return name;
+        return this.firstName +" " + this.lastName;
     }
 
     static from(artist: any){

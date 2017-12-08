@@ -13,7 +13,6 @@ class Login extends React.Component<any,any>{
     componentDidUpdate(){
         this.initialState.redirect = this.props.authorized;
         if(this.initialState.redirect === true){
-            console.log(JSON.stringify(this.props));
             this.props.history.push("/music");
         }
     }
@@ -46,18 +45,6 @@ class Login extends React.Component<any,any>{
         }
         else{
             this.props.authenticate(username, password);
-            // authenticateUser(username, password)
-            //     .then((result) => {
-            //         console.log("Logged in as " + username);
-            //         console.log('token = ' + result.getIdToken().getJwtToken());
-            //         document.cookie = 'accessToken='+ result.getAccessToken().getJwtToken() +';path=/;expires='+result.getAccessToken().getExpiration()+';';
-            //         document.cookie = 'idToken='+ result.getIdToken().getJwtToken() +';path=/;expires='+result.getIdToken().getExpiration()+';';
-            //         this.setState({register: false, login: true});
-            //         store.dispatch(Actions.AUTH_SUCCESS(result));
-            //     }, (error) => {
-            //         console.error(error);
-            //         this.setState({errorString:error.message})
-            //     })
         }
     }
 
