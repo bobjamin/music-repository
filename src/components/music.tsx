@@ -27,6 +27,7 @@ class Music extends React.Component<any,any>{
     }
 
     render() {
+        if(!this.props.authorized) return (<Redirect to="/login"/>);
         return (
             <div id="page-content-wrapper" style={{ width: '100%', paddingTop: '50px' }}>
                 <div className="container">

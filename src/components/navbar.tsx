@@ -8,9 +8,8 @@ let hexagonLogo = require('../assets/images/hexagon-logo.png');
 
 const Navbar = (props) => (
     <div>
-        <img src={hexagonLogo} style={logoStyle}/>
-        <nav className="navbar navbar-fixed-top" id="navbar-wrapper" role="navigation" style={style} >
-
+        <nav className="navbar navbar-fixed-top" id="navbar-wrapper" role="navigation" style={style}>
+            <img src={hexagonLogo} style={logoStyle}/>
             <Link to="/music">
                 <div style={titleStyle}>MUSIC REPOSITORY</div>
             </Link>

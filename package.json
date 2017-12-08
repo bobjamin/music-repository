@@ -26,9 +26,11 @@
   },
   "devDependencies": {
     "@types/node": "^8.0.56",
+    "@types/react-bootstrap": "^0.31.8",
     "@types/react-dom": "^16.0.3",
     "@types/react-redux": "^5.0.14",
     "@types/react-router": "^4.0.19",
+    "@types/react-router-dom": "^4.2.3",
     "@types/react-router-redux": "^5.0.10",
     "@types/redux": "^3.6.0",
     "awesome-typescript-loader": "^3.4.1",
