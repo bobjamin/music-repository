@@ -2,6 +2,8 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux'
 import {connect} from 'react-redux'
 import { authenticate } from "../services/auth-service";
+import { Button } from 'react-bootstrap';
+
 
 class Login extends React.Component<any,any>{
     initialState = {
@@ -60,8 +62,8 @@ class Login extends React.Component<any,any>{
     }
 
 
-    render(){
-        if(this.props.authorized){
+    render() {
+        if (this.props.authorized) {
             return <div style={{color: 'white'}}>YOU ARE LOGGED IN ALREADY!</div>
         }
         let errorSection;
@@ -88,31 +90,25 @@ class Login extends React.Component<any,any>{
             </div>
         );
         return (
-            <div>
-                <div id="all-content-wrapper">
-                    <div id="page-content-wrapper" style={pageWrapperStyle}>
-                        <div style={containerStyle} className="container col-lg-4 col-sm-9 clearfix">
-                            <div style={{textAlign: 'center'}}>
-                                <h2 style={h2Style} onClick={()=>this.setLogin()}>LOGIN</h2>
-                                <h2 style={{...h2Style, padding: '0px 5px'}}>|</h2>
-                                <h2 style={h2Style} onClick={()=>this.setRegister()}>REGISTER</h2>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="formGroupUsername">USERNAME</label>
-                                <input id="formGroupUsername" className="form-control" type="text"/>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="formGroupPassword">PASSWORD</label>
-                                <input id="formGroupPassword" className="form-control" type="password"/>
-                            </div>
-                            {registerSection}
-                            <div style={{textAlign: 'center'}}>
-                                <input type="button" value={this.buttonText.bind(this)()}
-                                       onClick={()=>this.loginRegisterButtonClicked()} className={this.props.loggingIn?"btn-warning":"btn-primary"}
-                                       style={buttonStyle}/>
-                                {errorSection}
-                            </div>
-                        </div>
+            <div id="page-content-wrapper" style={pageWrapperStyle}>
+                <div style={containerStyle} className="container col-lg-4 col-sm-9 clearfix">
+                    <div style={{textAlign: 'center'}}>
+                        <h2 style={h2Style} onClick={()=>this.setLogin()}>LOGIN</h2>
+                        <h2 style={{...h2Style, padding: '0px 5px'}}>|</h2>
+                        <h2 style={h2Style} onClick={()=>this.setRegister()}>REGISTER</h2>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="formGroupUsername">USERNAME</label>
+                        <input id="formGroupUsername" className="form-control" type="text"/>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="formGroupPassword">PASSWORD</label>
+                        <input id="formGroupPassword" className="form-control" type="password"/>
+                    </div>
+                    {registerSection}
+                    <div style={{textAlign: 'center'}}>
+                        <Button className={this.props.loggingIn?"btn-warning":"btn-primary"} onClick={()=>this.loginRegisterButtonClicked()}>{this.buttonText.bind(this)()}</Button>
+                        {errorSection}
                     </div>
                 </div>
             </div>
