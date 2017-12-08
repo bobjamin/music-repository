@@ -18,4 +18,8 @@ export default class Artist {
         }
         return name;
     }
+
+    static from(artist: any){
+        return new Artist(artist['uid'], artist['firstName'], artist['lastName']);
+    }
 }

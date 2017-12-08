@@ -1,55 +1,89 @@
-import store from "../state/store/store";
-import * as Actions from '../state/actions/actions'
-import {Music} from "../model/music";
+import Axios from 'axios';
 import Artist from "../model/artist";
+import {Music} from "../model/music";
 
-export function retrieveMusic(): Promise<any> {
-    return new Promise((resolve, reject) => {
-        store.dispatch(Actions.GET_MUSIC_SUCCESS(music()));
-        resolve();
-    });
+const musicUrl = 'https://0p5q8ygv39.execute-api.eu-west-1.amazonaws.com/dev/music';
+const artistUrl = 'https://begbh03p5g.execute-api.eu-west-1.amazonaws.com/dev/artists';
+
+export const SEARCH_TEXT_CHANGED = 'music/SEARCH_TEXT_CHANGED';
+export const MUSIC_UPDATED = 'music/MUSIC_UPDATED';
+export const THUMBNAIL_UPDATED = 'music/THUMBNAIL_UPDATED';
+
+const initialState = {
+    searchText: "",
+    music: new Map<Artist, Music[]>(),
+    thumbnails: new Map<string, string>()
+};
+
+export default (state = initialState, action) => {
+    switch (action.type) {
+        case SEARCH_TEXT_CHANGED:
+            return {
+                ...state,
+                searchText: action.payload
+            };
+        case MUSIC_UPDATED:
+            return {
+                ...state,
+                music: action.payload
+            };
+        case THUMBNAIL_UPDATED:
+            return {
+                ...state,
+                thumbnails: action.payload
+            };
+        default: return state;
+    }
 }
 
-const music = (): Map<Artist, Music[]> =>{
-    let mappedMusic = new Map<Artist, Music[]>();
-    let music = musicList();
-    let artists = artistList();
+export const searchTextChanged = text => dispatch => dispatch({ type: SEARCH_TEXT_CHANGED, payload: text });
+
+export const retrieveMusic = (idJwtToken) => async dispatch => {
+    let artistsResponse = await Axios.request({ method: 'get',  url: artistUrl, headers: { 'Authorization': idJwtToken }});
+    let artists = artistsResponse.data;
+    let musicResponse = await Axios.request({ method: 'get',  url: musicUrl, headers: { 'Authorization': idJwtToken }});
+    let music = musicResponse.data;
     let otherArtist = new Artist(-1, "", "Other");
+    let artistMap = new Map<string, Artist>();
+    artists.forEach(artist => {
+        artistMap.set(artist['uid'] + '', Artist.from(artist));
+    });
+    let musicMap = new Map<Artist, Music[]>();
     music.forEach(music => {
-        var artist = artists.get(music.artist);
+        let artist = artistMap.get(music['artist']);
         if(artist == null){
             artist = otherArtist
         }
-        if(!mappedMusic.has(artist)){
-            mappedMusic.set(artist, []);
+        if(!musicMap.has(artist)){
+            musicMap.set(artist, []);
         }
-        mappedMusic.get(artist).push(music);
+        musicMap.get(artist).push(Music.from(music));
     });
-    return mappedMusic;
+    dispatch({ type: MUSIC_UPDATED, payload: musicMap });
+    retrieveThumbnails(musicMap, idJwtToken)(dispatch);
 };
 
-
-
-const musicList = () => {
-    let music = [];
-
-    for(var i = 0;i<50;i++){
-        var m1 = new Music(i, 'Hungarian Rhapsody No. ' + i,'Rhapsody', 2);
-        m1.artist = 1;
-        music.push(m1);
-        var m2 = new Music(i+50,null,'Ballad', i);
-        m2.artist = 0;
-        music.push(m2);
+const retrieveThumbnails = (music: Map<Artist, Music[]>, idJwtToken) => async dispatch => {
+    let thumbnails = new Map<string, any>();
+    for(const pair of music){
+        let musicList = pair[1];
+        for(let i = 0; i < musicList.length; i++){
+            try {
+                let thumbnailData = await Axios.request({ method: 'get',  url: musicUrl + '/' + musicList[i].uid+'/thumbnail', headers: { 'Authorization': idJwtToken }});
+                let thumbnail = thumbnailData.data;
+                thumbnails.set('' + musicList[i].uid, thumbnail);
+                dispatch({ type: THUMBNAIL_UPDATED, payload:thumbnails });
+            }
+            catch(e){
+                console.warn(e);
+            }
+        }
     }
-    return music;
 };
 
-const artistList = () => {
-    let artists = [
-        new Artist(0, 'Frederic', 'Chopin'),
-        new Artist(1, 'Franz', 'Liszt')
-    ];
-    let mappedArtists = new Map<number, Artist>();
-    artists.forEach(artist => mappedArtists.set(artist.uid, artist));
-    return mappedArtists;
-};
+export async function getSheetMusicFor(uid: string, idJwtToken): Promise<string>{
+    let data = await Axios.request({ method: 'get',  url: musicUrl + '/' + uid + "/pdf", headers: { 'Authorization': idJwtToken }});
+    return data.data;
+}
+
+

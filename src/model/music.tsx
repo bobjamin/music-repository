@@ -1,4 +1,4 @@
-import Artist from "./artist";
+
 export class Music{
     uid: number;
     genre: string;
@@ -28,5 +28,9 @@ export class Music{
             }
         }
         return name;
+    }
+
+    static from(music: any){
+        return new Music(music['uid'], music['name'], music['genre'], music['number'], music['opus']);
     }
 }
