@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux'
 import {connect} from 'react-redux'
-import { authenticate } from "../services/auth-service";
+import {authenticate, register} from "../services/auth-service";
 import { Button } from 'react-bootstrap';
 
 
@@ -41,7 +41,8 @@ class Login extends React.Component<any,any>{
         let password = (document.getElementById('formGroupPassword') as HTMLInputElement).value;
         this.setState({errorString:""});
         if(this.state.register){
-            //this.registerUser(username, password)
+            let email = (document.getElementById('formGroupEmail') as HTMLInputElement).value;
+            this.props.register(username, password, email);
         }
         else{
             this.props.authenticate(username, password);
@@ -104,7 +105,7 @@ class Login extends React.Component<any,any>{
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-    authenticate
+    authenticate, register
 } as any, dispatch);
 
 const mapStateToProps = state => {

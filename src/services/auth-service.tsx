@@ -1,21 +1,20 @@
-import {CognitoUserPool, CognitoUser, AuthenticationDetails, CognitoUserSession} from "amazon-cognito-identity-js";
+import {CognitoUserPool, CognitoUser, AuthenticationDetails, CognitoUserSession, CognitoUserAttribute} from "amazon-cognito-identity-js";
 
 
-// function registerUser(username: string, password: string, email: string): Promise<void>{
-//     console.log('Registering User');
-//     AWS.config.region = 'eu-west-1';
-//     return new Promise((resolve, reject) => {
-//         userPool().signUp(username, password, [new CognitoUserAttribute({ Name : 'email', Value : email })],null, (err, result) => {
-//             if(err){
-//                 console.error(err);
-//                 reject(err)
-//             }
-//             else{
-//                 resolve();
-//             }
-//         })
-//     })
-// }
+function registerUser(username: string, password: string, email: string): Promise<void>{
+    console.log('Registering User');
+    return new Promise((resolve, reject) => {
+        userPool().signUp(username, password, [new CognitoUserAttribute({ Name : 'email', Value : email })],null, (err, result) => {
+            if(err){
+                console.error(err);
+                reject(err)
+            }
+            else{
+                resolve();
+            }
+        })
+    })
+}
 
 function userPool(): CognitoUserPool{
     return new CognitoUserPool({
@@ -38,6 +37,7 @@ function authenticateUser(username: string, password: string): Promise<CognitoUs
 }
 
 export const AUTH_SUCCESS = 'auth/AUTH_SUCCESS';
+export const REGISTER_SUCCESS = 'auth/REGISTER_SUCCESS';
 export const AUTH_FAILURE = 'auth/AUTH_FAILURE';
 export const LOGGING_IN = 'auth/LOGGING_IN';
 
@@ -52,6 +52,15 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case REGISTER_SUCCESS:
+            return {
+                ...state,
+                authorized: false,
+                loggingIn: false,
+                authFailReason: "Registered Successfully, Verify by clicking the link that has been emailed to you then log in.",
+                authTokens: null,
+                user: null
+            };
         case AUTH_SUCCESS:
             console.log('Auth Success');
             return {
@@ -92,5 +101,13 @@ export const authenticate = (username, password) =>  dispatch => {
     dispatch({ type: LOGGING_IN });
     authenticateUser(username, password)
         .then((result) => dispatch({ type: AUTH_SUCCESS, authTokens: result, user: username }) )
+        .catch((err) => {console.log(err);dispatch({ type: AUTH_FAILURE, payload: err.message }) });
+};
+
+export const register = (username, password, email) =>  dispatch => {
+    console.log(username);
+    dispatch({ type: LOGGING_IN });
+    registerUser(username, password, email)
+        .then((result) => dispatch({ type: REGISTER_SUCCESS, authTokens: result, user: username }) )
         .catch((err) => {console.log(err);dispatch({ type: AUTH_FAILURE, payload: err.message }) });
 };
