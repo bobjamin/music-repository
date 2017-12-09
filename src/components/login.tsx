@@ -134,8 +134,3 @@ const pageWrapperStyle = {
     width: '100%',
     paddingTop: '50px'
 };
-
-const buttonStyle = {
-    borderRadius: '5px',
-    padding: '10px 20px'
-};

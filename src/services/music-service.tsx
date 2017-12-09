@@ -97,8 +97,17 @@ export const retrieveMusic = (idJwtToken) => async dispatch => {
         }
         musicMap.get(artist).push(Music.from(music));
     });
-    dispatch({ type: MUSIC_UPDATED, payload: musicMap });
-    retrieveThumbnails(musicMap, idJwtToken)(dispatch);
+    let sortedList = Array.from(musicMap).map(([artist, musicList]) => [artist, musicList.sort(
+        (a, b) => {
+            if (a.genre === b.genre) return a.pieceName().localeCompare(b.pieceName());
+            else return b.genre.localeCompare(a.genre)
+        }
+    )]);
+    let sortedMap = new Map<Artist, Music[]>();
+    sortedList.forEach(([a, b]) => sortedMap.set(a as Artist, b as Music[]));
+
+    dispatch({ type: MUSIC_UPDATED, payload: sortedMap });
+    retrieveThumbnails(sortedMap, idJwtToken)(dispatch);
 };
 
 const retrieveThumbnails = (music: Map<Artist, Music[]>, idJwtToken) => async dispatch => {

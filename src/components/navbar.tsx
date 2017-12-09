@@ -13,12 +13,24 @@ const Navbar = (props) => (
             <Link to="/music">
                 <div style={titleStyle}>MUSIC REPOSITORY</div>
             </Link>
-            <Link to="/login">
-                <div style={userStyle}>
-                    <i className="fa fa-user-circle" style={userIconStyle}/>
-                    <div style={userText}>{props.authorized?props.user: 'LOG IN'}</div>
-                </div>
-            </Link>
+            {
+                props.authorized ? (
+                    <Link to="/profile">
+                        <div style={userStyle}>
+                            <i className="fa fa-user-circle" style={userIconStyle}/>
+                            <div style={userText}>{ props.user }</div>
+                        </div>
+                    </Link>
+                )
+                :(
+                    <Link to="/login">
+                        <div style={userStyle}>
+                            <i className="fa fa-user-circle" style={userIconStyle}/>
+                            <div style={userText}>LOG IN</div>
+                        </div>
+                    </Link>
+                )
+            }
         </nav>
     </div>
 );

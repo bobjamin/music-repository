@@ -6584,8 +6584,16 @@ exports.retrieveMusic = (idJwtToken) => (dispatch) => __awaiter(this, void 0, vo
         }
         musicMap.get(artist).push(music_1.Music.from(music));
     });
-    dispatch({ type: exports.MUSIC_UPDATED, payload: musicMap });
-    retrieveThumbnails(musicMap, idJwtToken)(dispatch);
+    let sortedList = Array.from(musicMap).map(([artist, musicList]) => [artist, musicList.sort((a, b) => {
+            if (a.genre === b.genre)
+                return a.pieceName().localeCompare(b.pieceName());
+            else
+                return b.genre.localeCompare(a.genre);
+        })]);
+    let sortedMap = new Map();
+    sortedList.forEach(([a, b]) => sortedMap.set(a, b));
+    dispatch({ type: exports.MUSIC_UPDATED, payload: sortedMap });
+    retrieveThumbnails(sortedMap, idJwtToken)(dispatch);
 });
 const retrieveThumbnails = (music, idJwtToken) => (dispatch) => __awaiter(this, void 0, void 0, function* () {
     let thumbnails = new Map();
@@ -15759,6 +15767,7 @@ function authenticateUser(username, password) {
     });
 }
 exports.AUTH_SUCCESS = 'auth/AUTH_SUCCESS';
+exports.REGISTER_SUCCESS = 'auth/REGISTER_SUCCESS';
 exports.AUTH_FAILURE = 'auth/AUTH_FAILURE';
 exports.LOGGING_IN = 'auth/LOGGING_IN';
 const initialState = {
@@ -15770,6 +15779,8 @@ const initialState = {
 };
 exports.default = (state = initialState, action) => {
     switch (action.type) {
+        case exports.REGISTER_SUCCESS:
+            return Object.assign({}, state, { authorized: false, loggingIn: false, authFailReason: "Registered Successfully, Verify by clicking the link that has been emailed to you then log in.", authTokens: null, user: null });
         case exports.AUTH_SUCCESS:
             console.log('Auth Success');
             return Object.assign({}, state, { authorized: true, loggingIn: false, authFailReason: null, authTokens: action.authTokens, user: action.user });
@@ -15788,6 +15799,13 @@ exports.authenticate = (username, password) => dispatch => {
     dispatch({ type: exports.LOGGING_IN });
     authenticateUser(username, password)
         .then((result) => dispatch({ type: exports.AUTH_SUCCESS, authTokens: result, user: username }))
+        .catch((err) => { console.log(err); dispatch({ type: exports.AUTH_FAILURE, payload: err.message }); });
+};
+exports.register = (username, password, email) => dispatch => {
+    console.log(username);
+    dispatch({ type: exports.LOGGING_IN });
+    registerUser(username, password, email)
+        .then((result) => dispatch({ type: exports.REGISTER_SUCCESS, authTokens: result, user: username }))
         .catch((err) => { console.log(err); dispatch({ type: exports.AUTH_FAILURE, payload: err.message }); });
 };
 
@@ -47936,7 +47954,8 @@ class Login extends React.Component {
         let password = document.getElementById('formGroupPassword').value;
         this.setState({ errorString: "" });
         if (this.state.register) {
-            //this.registerUser(username, password)
+            let email = document.getElementById('formGroupEmail').value;
+            this.props.register(username, password, email);
         }
         else {
             this.props.authenticate(username, password);
@@ -47982,7 +48001,7 @@ class Login extends React.Component {
     }
 }
 const mapDispatchToProps = dispatch => redux_1.bindActionCreators({
-    authenticate: auth_service_1.authenticate
+    authenticate: auth_service_1.authenticate, register: auth_service_1.register
 }, dispatch);
 const mapStateToProps = state => {
     return ({

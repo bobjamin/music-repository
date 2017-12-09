@@ -2,6 +2,7 @@ import * as React from 'react';
 import Navbar from './navbar';
 import Login from './login';
 import Music from './music';
+import Profile from './profile';
 import { Route } from 'react-router-dom'
 import {Redirect, RouteComponentProps, Switch} from "react-router";
 import ReactNode = React.ReactNode;
@@ -14,6 +15,7 @@ const App = () => (
             <Switch>
                 <Route exact path="/" render={(props: RouteComponentProps<any>):ReactNode => ( <Redirect to="/login"/> )} />
                 <Route exact path="/login" component={Login}/>
+                <Route exact path="/profile" component={Profile}/>
                 <Route exact path="/music" component={Music}/>
                 <Route exact path="/music/add" component={AddMusic}/>
                 <Route render={_404}/>
