@@ -26,8 +26,9 @@ class MusicGrid extends React.Component<{pieceSelected:any}, any>{
 
     filteredMusicList(){
         let filter = this.props['searchText'].toLowerCase();
-        let allMusic = this.props['music'].map( piece => {piece.thumbnail = this.props['thumbnails'].get(piece.uid); return piece;});
+        let allMusic = this.props['music'];
         if(allMusic) {
+            allMusic = allMusic.map( piece => {piece.thumbnail = this.props['thumbnails'].get(piece.uid); return piece;});
             let musicMap = Array.from(allMusic.reduce((map, piece) => {
                 if (map.has(piece.artist)) map.get(piece.artist).push(piece); else map.set(piece.artist, [piece]);
                 return map;
