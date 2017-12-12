@@ -1,6 +1,5 @@
 import {CognitoUserPool, CognitoUser, AuthenticationDetails, CognitoUserSession, CognitoUserAttribute} from "amazon-cognito-identity-js";
 
-
 function registerUser(username: string, password: string, email: string): Promise<void>{
     console.log('Registering User');
     return new Promise((resolve, reject) => {
@@ -36,10 +35,12 @@ function authenticateUser(username: string, password: string): Promise<CognitoUs
     });
 }
 
+
 export const AUTH_SUCCESS = 'auth/AUTH_SUCCESS';
 export const REGISTER_SUCCESS = 'auth/REGISTER_SUCCESS';
 export const AUTH_FAILURE = 'auth/AUTH_FAILURE';
 export const LOGGING_IN = 'auth/LOGGING_IN';
+export const SIGNED_OUT = 'auth/SIGNED_OUT';
 
 
 const initialState = {
@@ -92,6 +93,16 @@ export default (state = initialState, action) => {
                 user: null
             }
         }
+        case SIGNED_OUT:{
+            return {
+                ...state,
+                authorized: false,
+                loggingIn: false,
+                authFailReason: null,
+                authTokens: null,
+                user: null
+            };
+        }
         default: return state;
     }
 }
@@ -110,4 +121,27 @@ export const register = (username, password, email) =>  dispatch => {
     registerUser(username, password, email)
         .then((result) => dispatch({ type: REGISTER_SUCCESS, authTokens: result, user: username }) )
         .catch((err) => {console.log(err);dispatch({ type: AUTH_FAILURE, payload: err.message }) });
+};
+
+export const checkSession = () => dispatch => {
+    let cognitoUser = userPool().getCurrentUser();
+    if(cognitoUser) {
+        cognitoUser.getSession((err, session) => {
+            if(err || !session.isValid()){
+                console.log('No Valid Session Found');
+            }
+            else{
+                console.log('Found Valid Session');
+                dispatch({ type: AUTH_SUCCESS, authTokens: session, user: cognitoUser['username'] })
+            }
+        })
+    }
+};
+
+export const signOut = () => dispatch => {
+    let cognitoUser = userPool().getCurrentUser();
+    if(cognitoUser){
+        cognitoUser.signOut();
+        dispatch({ type: SIGNED_OUT });
+    }
 };

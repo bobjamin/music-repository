@@ -3,6 +3,7 @@ import Artist from "../model/artist";
 import {Music} from "../model/music";
 
 const musicUrl = 'https://0p5q8ygv39.execute-api.eu-west-1.amazonaws.com/dev/music';
+const groupUrl = 'https://0p5q8ygv39.execute-api.eu-west-1.amazonaws.com/dev/groups';
 const artistUrl = 'https://begbh03p5g.execute-api.eu-west-1.amazonaws.com/dev/artists';
 
 export const SEARCH_TEXT_CHANGED = 'music/SEARCH_TEXT_CHANGED';
@@ -13,14 +14,18 @@ export const ADDING_MUSIC_FAILED = 'music/ADDING_MUSIC_FAILED';
 export const ADDING_MUSIC_SUCCESS = 'music/ADDING_MUSIC_SUCCESS';
 export const ADDING_ARTIST_SUCCESS =  'music/ADDING_ARTIST_SUCCESS';
 export const NEW_MUSIC_INIT = 'music/NEW_MUSIC_INIT';
+export const GROUPS_FOUND = 'music/GROUPS_FOUND';
+export const PIECE_SELECTED = 'music/PIECE_SELECTED';
 
 const initialState = {
     searchText: "",
-    artists: new Map<string, Artist>(),
-    music: new Map<Artist, Music[]>(),
+    artists: [],
+    music: [],
     thumbnails: new Map<string, string>(),
     addMusicFailReason: null,
-    musicAdded: false
+    musicAdded: false,
+    groups: [],
+    selectedIds: []
 };
 
 export default (state = initialState, action) => {
@@ -69,6 +74,23 @@ export default (state = initialState, action) => {
                 musicAdded: false,
                 addMusicFailReason: null
             };
+        case GROUPS_FOUND:
+            return {
+                ...state,
+                groups: action.payload
+            };
+        case PIECE_SELECTED:
+            return {
+                ...state,
+                selectedIds:action.payload
+            };
+        case 'auth/SIGNED_OUT':
+            return {
+                ...state,
+                groups: null,
+                music: null,
+                artists: null
+            };
         default: return state;
     }
 }
@@ -77,53 +99,33 @@ export const searchTextChanged = text => dispatch => dispatch({ type: SEARCH_TEX
 
 export const retrieveMusic = (idJwtToken) => async dispatch => {
     let artistsResponse = await Axios.request({ method: 'get',  url: artistUrl, headers: { 'Authorization': idJwtToken }});
-    let artists = artistsResponse.data;
-    let musicResponse = await Axios.request({ method: 'get',  url: musicUrl, headers: { 'Authorization': idJwtToken }});
-    let music = musicResponse.data;
-    let otherArtist = new Artist(-1, "", "Other");
-    let artistMap = new Map<string, Artist>();
-    artists.forEach(artist => {
-        artistMap.set(artist['uid'] + '', Artist.from(artist));
-    });
-    dispatch({ type: ARTISTS_FOUND, payload: artistMap });
-    let musicMap = new Map<Artist, Music[]>();
-    music.forEach(music => {
-        let artist = artistMap.get(music['artist']);
-        if(artist == null){
-            artist = otherArtist
-        }
-        if(!musicMap.has(artist)){
-            musicMap.set(artist, []);
-        }
-        musicMap.get(artist).push(Music.from(music));
-    });
-    let sortedList = Array.from(musicMap).map(([artist, musicList]) => [artist, musicList.sort(
-        (a, b) => {
-            if (a.genre === b.genre) return a.pieceName().localeCompare(b.pieceName());
-            else return b.genre.localeCompare(a.genre)
-        }
-    )]);
-    let sortedMap = new Map<Artist, Music[]>();
-    sortedList.forEach(([a, b]) => sortedMap.set(a as Artist, b as Music[]));
+    let artists = artistsResponse.data.map(Artist.from);
+    let artistMap: Map<string, Artist> = artists.reduce((map, artist) => { map.set(artist.uid, artist); return map; }, new Map<string, Artist>());
 
-    dispatch({ type: MUSIC_UPDATED, payload: sortedMap });
-    retrieveThumbnails(sortedMap, idJwtToken)(dispatch);
+    dispatch({type: ARTISTS_FOUND, payload: artists.map(Artist.from)});
+    let musicResponse = await Axios.request({ method: 'get',  url: musicUrl, headers: { 'Authorization': idJwtToken }});
+    let musicList = musicResponse.data.map( (m) => {
+        let music = Music.from(m);
+        if(artistMap.has(m.artist)){
+            music.artist = artistMap.get(m.artist) as any;
+        }
+        return music;
+    });
+    dispatch({type: MUSIC_UPDATED, payload: musicList});
+    retrieveThumbnails(musicList, idJwtToken)(dispatch);
 };
 
-const retrieveThumbnails = (music: Map<Artist, Music[]>, idJwtToken) => async dispatch => {
-    let thumbnails = new Map<string, any>();
-    for(const pair of music){
-        let musicList = pair[1];
-        for(let i = 0; i < musicList.length; i++){
-            try {
-                let thumbnailData = await Axios.request({ method: 'get',  url: musicUrl + '/' + musicList[i].uid+'/thumbnail', headers: { 'Authorization': idJwtToken }});
-                let thumbnail = thumbnailData.data;
-                thumbnails.set('' + musicList[i].uid, thumbnail);
-                dispatch({ type: THUMBNAIL_UPDATED, payload:thumbnails });
-            }
-            catch(e){
-                console.warn(e);
-            }
+const retrieveThumbnails = (music: Music[], idJwtToken) => async dispatch => {
+    let thumbnails = new Map<string, string>();
+    for(let i = 0; i < music.length; i++){
+        try {
+            let thumbnailData = await Axios.request({ method: 'get',  url: musicUrl + '/' + music[i].uid + '/thumbnail', headers: { 'Authorization': idJwtToken }});
+            let thumbnail = thumbnailData.data;
+            thumbnails.set(music[i].uid, thumbnail);
+            dispatch({ type: THUMBNAIL_UPDATED, payload:Array.from(thumbnails).reduce((map, [uid, data]) => {map.set(uid, data); return map;}, new Map<string, string>())});
+        }
+        catch(e){
+            console.warn(e);
         }
     }
 };
@@ -174,4 +176,38 @@ export async function getSheetMusicFor(uid: string, idJwtToken): Promise<string>
     return data.data;
 }
 
+export const groups = (idJwtToken) => async dispatch => {
+    let response = await Axios.request({ method: 'get',  url: groupUrl, headers: { 'Authorization': idJwtToken }});
+    let groups = response.data;
+    console.log(JSON.stringify(groups));
+    dispatch({type: GROUPS_FOUND, payload: groups });
+};
 
+export const createGroup = (name: string, idJwtToken) => async dispatch => {
+    await Axios.post(groupUrl, {name: name}, {headers: {'Authorization': idJwtToken}});
+    console.log('Group Created');
+    await groups(idJwtToken)(dispatch);
+};
+
+export const invite = (gid: string, user: string, idJwtToken) => async dispatch => {
+    await Axios.post(groupUrl+ '/' + gid + '/invitation', {uid: user}, {headers: {'Authorization': idJwtToken}});
+    console.log('Invitation Sent');
+    await groups(idJwtToken)(dispatch);
+};
+
+export const acceptInvite = (gid: string, accept: boolean, idJwtToken) => async dispatch => {
+    await Axios.post(groupUrl+ '/' + gid + '/invitation', {accept: accept}, {headers: {'Authorization': idJwtToken}});
+    console.log('Invitation Sorted');
+    await groups(idJwtToken)(dispatch);
+};
+
+
+export const removeMember = (gid: string, uid: string, idJwtToken) => async dispatch => {
+    await Axios.post(groupUrl+ '/' + gid + '/invitation', {uid: uid, remove: true}, {headers: {'Authorization': idJwtToken}});
+    console.log('Invitation Removed');
+    await groups(idJwtToken)(dispatch);
+};
+
+export const pieceSelected = (pieces: any[]) => dispatch => {
+    dispatch( {type:PIECE_SELECTED, payload: pieces} );
+};

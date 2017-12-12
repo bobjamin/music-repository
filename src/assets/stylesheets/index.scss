@@ -1,3 +1,6 @@
+*, h1, h2, h3, h4, h5{
+  font-weight: 100
+}
 
 body{
   margin:0;
@@ -44,4 +47,12 @@ h4{
 }
 .thumbnailOverlay:active:before {
   background: rgba(68, 182, 223, 0.36);
+}
+
+.clickableText:focus{
+  outline: 2px solid #027aff;
+}
+
+.deleteIcon:hover{
+  color: #f9b514;
 }

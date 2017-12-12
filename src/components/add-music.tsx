@@ -120,7 +120,7 @@ class AddArtists extends React.Component<{ artists:Map<string, Artist> },{ newAr
             <div className="form-group">
                 <label htmlFor="formGroupArtist">
                     Artist
-                    <i onClick={this.newClicked.bind(this)} className="fa fa-plus" style={{ paddingLeft: '10px' }}/>
+                    <i onClick={this.newClicked.bind(this)} className="fa fa-plus" style={{ paddingLeft: '10px', cursor: 'pointer' }}/>
                 </label>
                 {
                     this.state.newArtist ? (

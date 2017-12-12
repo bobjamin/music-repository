@@ -13,7 +13,7 @@ const App = () => (
         <main>
             <Navbar/>
             <Switch>
-                <Route exact path="/" render={(props: RouteComponentProps<any>):ReactNode => ( <Redirect to="/login"/> )} />
+                <Route exact path="/" render={(props: RouteComponentProps<any>):ReactNode => ( <Redirect to="/music"/> )} />
                 <Route exact path="/login" component={Login}/>
                 <Route exact path="/profile" component={Profile}/>
                 <Route exact path="/music" component={Music}/>

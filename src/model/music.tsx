@@ -1,14 +1,14 @@
 
+import Artist from "./artist";
 export class Music{
-    uid: number;
+    uid: string;
     genre: string;
     number?: number;
     opus?: number;
     name?: string;
-    artist: number;
-    instrument: string;
+    artist: Artist;
 
-    constructor(uid: number, name?: string, genre?: string, number?: number, opus?: number) {
+    constructor(uid: string, name?: string, genre?: string, number?: number, opus?: number) {
         this.uid = uid;
         this.genre = genre;
         this.number = number;
@@ -17,7 +17,7 @@ export class Music{
     }
 
     pieceName(){
-        var name = this.name;
+        let name = this.name;
         if(!name){
             name = this.genre;
             if(this.number){

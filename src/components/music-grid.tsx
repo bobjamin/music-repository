@@ -8,51 +8,53 @@ import {Music} from "../model/music";
 import Artist from "../model/artist";
 import MusicPiece from "./music-piece";
 
-const MusicGrid = (props: {pieceSelected: any}) => (
-    <div className="grid row col-12">
-        { gridItems((props as any).music, (props as any).thumbnails, props.pieceSelected, (props as any).searchText) }
-    </div>
-);
+class MusicGrid extends React.Component<{pieceSelected:any}, any>{
 
-function filtered(musicList: Music[], artist: Artist, filter: string): Music[]{
-    if(filter && filter != ''){
-        let lowerFilter = filter.toLowerCase();
-        if(artist.name().toLowerCase().indexOf(lowerFilter) != -1) return musicList;
-        else return musicList.filter((piece) => piece.pieceName().toLowerCase().indexOf(lowerFilter) != -1);
+    componentWillUpdate(){
     }
-    return musicList;
-}
 
-function gridItems(music: Map<Artist, Music[]>, thumbnails: Map<string, string>, pieceSelected: (uid) => void, searchText: string) {
-    let thumbnailFor = (uid:string) => (thumbnails && thumbnails.has(uid)) ? thumbnails.get(uid): null;
-    let items = [];
-    if(music) {
-        let key = 0;
-        music.forEach((musicList, artist) => {
-            let filteredMusicList = filtered(musicList, artist, searchText);
-            if(filteredMusicList.length > 0) items.push(titleElementFor(artist));
-            items.push(
-                (<div key={artist.uid} className="row">
-                    {filteredMusicList.map((music, index) =>
-                        <MusicPiece
-                            key={music.uid}
-                            text={music.pieceName()}
-                            thumbnail={thumbnailFor('' + music.uid)}
-                            thumbnailClicked={()=>pieceSelected(music.uid)}/>
-                    )}
-                </div>));
-        });
+    filterWith(filter, musicMap){
+        let pieceMatch = (piece) => piece.pieceName().toLowerCase().indexOf(filter) != -1;
+        let any = (list, match) => {
+            for(let i = 0; i<list.length; i++){ if(match(list[i]))return true; }
+            return false;
+        };
+        return musicMap.filter(([artist, musicList]) => artist.name().toLowerCase().indexOf(filter) != -1 || any(musicList, pieceMatch))
+            .map(([artist, musicList]) => [artist, musicList.filter(pieceMatch)])
+            .filter(([artist, musicList]) => musicList['length'] > 0)
     }
-    return items;
-}
 
-const titleElementFor = (artist: Artist) => {
-    return (
-        <div key={artist.uid + 'title'} style={{ width: '100%', borderBottom: '1px solid rgb(48, 59, 82)', padding: '10px', paddingTop: '30px', marginLeft: '20px'}}>
-            <h4 style={{ textAlign: 'left' }}>{artist.name()}</h4>
+    filteredMusicList(){
+        let filter = this.props['searchText'].toLowerCase();
+        let allMusic = this.props['music'].map( piece => {piece.thumbnail = this.props['thumbnails'].get(piece.uid); return piece;});
+        if(allMusic) {
+            let musicMap = Array.from(allMusic.reduce((map, piece) => {
+                if (map.has(piece.artist)) map.get(piece.artist).push(piece); else map.set(piece.artist, [piece]);
+                return map;
+            }, new Map<Artist, Array<Music>>()));
+            if (filter !== '') {
+                musicMap = this.filterWith(filter, musicMap)
+            }
+            musicMap = musicMap
+                .map(([artist,musicList]) => [artist, musicList.sort((ma, mb) => ma.pieceName().localeCompare(mb.pieceName()))])
+                .sort(([aa,am], [ba, bm]) =>  aa.name().localeCompare(ba.name()));
+            return musicMap.map(([artist, musicList]) =>
+                <div key={artist.uid + ' section'} className="row">
+                    <div key={artist.uid + ' title'} style={{ width: '100%', borderBottom: '1px solid rgb(48, 59, 82)', padding: '10px', paddingTop: '30px', marginLeft: '20px'}}>
+                        <h4 style={{ textAlign: 'left' }}>{artist.name()}</h4>
+                    </div>
+                    { musicList.map(music => <MusicPiece key={music.uid} piece={music} thumbnail={music.thumbnail} thumbnailClicked={() => this.props.pieceSelected(music.uid)}/>) }
+                </div>
+            );
+        }
+    }
+
+    render(){
+        return <div className="grid row col-12">
+            { this.filteredMusicList() }
         </div>
-    );
-};
+    }
+}
 
 export default connect(
     (state: any) => ({ authorized: state.auth.authorized, authTokens: state.auth.authTokens, searchText: state.music.searchText, music: state.music.music, thumbnails: state.music.thumbnails }),

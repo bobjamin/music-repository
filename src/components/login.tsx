@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux'
 import {connect} from 'react-redux'
-import {authenticate, register} from "../services/auth-service";
+import {Redirect} from "react-router";
+import {authenticate, register, checkSession} from "../services/auth-service";
 import { Button } from 'react-bootstrap';
 
 
@@ -23,6 +24,7 @@ class Login extends React.Component<any,any>{
 
     componentWillMount(){
         this.setState({register: false, errorString: "", login: false});
+        this.props.checkSession()
     }
 
     buttonText(){
@@ -51,8 +53,11 @@ class Login extends React.Component<any,any>{
 
 
     render() {
-        if (this.props.authorized) {
-            return <div style={{color: 'white'}}>YOU ARE LOGGED IN ALREADY!</div>
+        if (this.props.authorized ) {
+            if(this.props.location.state && this.props.location.state.redirectedFrom){
+                return <Redirect to={this.props.location.state.redirectedFrom}/>
+            }
+            else return <div style={{color: 'white'}}>YOU ARE LOGGED IN ALREADY!</div>
         }
         let errorSection;
         if (this.props.errorString) {
@@ -63,7 +68,7 @@ class Login extends React.Component<any,any>{
         if (!this.state.register)
             registerSection = (
                 <div style={{textAlign: 'center'}}>
-                    <h4 onClick={() => this.setRegister()}>REGISTER</h4>
+                    <h4 onClick={() => this.setRegister()} style={{cursor:'pointer'}}>REGISTER</h4>
                 </div>
             );
         else registerSection = (
@@ -73,7 +78,7 @@ class Login extends React.Component<any,any>{
                     <input id="formGroupEmail" className="form-control" type="email"/>
                 </div>
                 <div style={{textAlign: 'center'}}>
-                    <h4 onClick={() => this.setLogin()}>LOGIN</h4>
+                    <h4 onClick={() => this.setLogin()} style={{cursor:'pointer'}}>LOGIN</h4>
                 </div>
             </div>
         );
@@ -105,7 +110,7 @@ class Login extends React.Component<any,any>{
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-    authenticate, register
+    authenticate, register, checkSession
 } as any, dispatch);
 
 const mapStateToProps = state => {
@@ -122,7 +127,7 @@ export default connect(
 )(Login)
 
 
-const h2Style = { fontWeight: 'lighter' as 'lighter', display: 'inline-block' };
+const h2Style = { fontWeight: 'lighter' as 'lighter', display: 'inline-block', cursor: 'pointer' };
 const containerStyle = {
     borderRadius: '5px',
     backgroundColor: 'rgb(35, 53, 63)',
