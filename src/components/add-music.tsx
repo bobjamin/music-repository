@@ -101,14 +101,14 @@ export default connect(
     dispatch => bindActionCreators({ newMusicInit, createMusic, createArtist } as any, dispatch)
 )(AddMusic)
 
-class AddArtists extends React.Component<{ artists:Map<string, Artist> },{ newArtist: boolean }>{
+class AddArtists extends React.Component<{ artists:Artist[] },{ newArtist: boolean }>{
 
     componentWillMount(){
         this.setState({newArtist: false});
     }
 
     artists(){
-        return Array.from(this.props.artists).map(([uid, artist]) => (<option key={uid} value={uid}>{artist.firstName + ' ' + artist.lastName}</option>));
+        return this.props.artists.map(artist => (<option key={artist.uid} value={artist.uid}>{artist.firstName + ' ' + artist.lastName}</option>));
     }
 
     newClicked(){

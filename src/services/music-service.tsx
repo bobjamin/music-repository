@@ -197,7 +197,7 @@ export const invite = (gid: string, user: string, idJwtToken) => async dispatch 
 
 export const acceptInvite = (gid: string, accept: boolean, idJwtToken) => async dispatch => {
     await Axios.post(groupUrl+ '/' + gid + '/invitation', {accept: accept}, {headers: {'Authorization': idJwtToken}});
-    console.log('Invitation Sorted');
+    console.log('Invitation Sorted - ' + gid + ' ' + accept);
     await groups(idJwtToken)(dispatch);
 };
 
@@ -210,4 +210,10 @@ export const removeMember = (gid: string, uid: string, idJwtToken) => async disp
 
 export const pieceSelected = (pieces: any[]) => dispatch => {
     dispatch( {type:PIECE_SELECTED, payload: pieces} );
+};
+
+export const addPiecesToGroup = (gid: string, pieces: Array<{mid: string, groups: Array<string>}>, idJwtToken) => async dispatch => {
+    console.log(JSON.stringify(pieces));
+    await Axios.post(groupUrl+ '/' + gid + '/music', {pieces: pieces}, {headers: {'Authorization': idJwtToken}});
+    await retrieveMusic(idJwtToken)(dispatch);
 };

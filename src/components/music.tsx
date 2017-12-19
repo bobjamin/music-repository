@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {Redirect} from "react-router";
 import { Link } from "react-router-dom";
 import Searchbar from './searchbar';
-import {searchTextChanged, retrieveMusic, getSheetMusicFor} from "../services/music-service";
+import {searchTextChanged, retrieveMusic, getSheetMusicFor, groups} from "../services/music-service";
 import MusicGrid from './music-grid';
 
 
@@ -13,6 +13,7 @@ class Music extends React.Component<any,any>{
     componentWillMount(){
         if(this.props.authorized) {
             this.props.retrieveMusic(this.props.authTokens.getIdToken().getJwtToken());
+            this.props.groups(this.props.authTokens.getIdToken().getJwtToken())
         }
     }
 
@@ -49,5 +50,5 @@ class Music extends React.Component<any,any>{
 
 export default connect(
     (state: any) => ({ authorized: state.auth.authorized, authTokens: state.auth.authTokens, searchText: state.music.searchText }),
-    dispatch => bindActionCreators({ searchTextChanged, retrieveMusic } as any, dispatch)
+    dispatch => bindActionCreators({ searchTextChanged, retrieveMusic, groups } as any, dispatch)
 )(Music)

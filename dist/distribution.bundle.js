@@ -5111,7 +5111,7 @@ exports.invite = (gid, user, idJwtToken) => (dispatch) => __awaiter(this, void 0
 });
 exports.acceptInvite = (gid, accept, idJwtToken) => (dispatch) => __awaiter(this, void 0, void 0, function* () {
     yield axios_1.default.post(groupUrl + '/' + gid + '/invitation', { accept: accept }, { headers: { 'Authorization': idJwtToken } });
-    console.log('Invitation Sorted');
+    console.log('Invitation Sorted - ' + gid + ' ' + accept);
     yield exports.groups(idJwtToken)(dispatch);
 });
 exports.removeMember = (gid, uid, idJwtToken) => (dispatch) => __awaiter(this, void 0, void 0, function* () {
@@ -5122,6 +5122,11 @@ exports.removeMember = (gid, uid, idJwtToken) => (dispatch) => __awaiter(this, v
 exports.pieceSelected = (pieces) => dispatch => {
     dispatch({ type: exports.PIECE_SELECTED, payload: pieces });
 };
+exports.addPiecesToGroup = (gid, pieces, idJwtToken) => (dispatch) => __awaiter(this, void 0, void 0, function* () {
+    console.log(JSON.stringify(pieces));
+    yield axios_1.default.post(groupUrl + '/' + gid + '/music', { pieces: pieces }, { headers: { 'Authorization': idJwtToken } });
+    yield exports.retrieveMusic(idJwtToken)(dispatch);
+});
 
 
 /***/ }),
@@ -26467,7 +26472,7 @@ module.exports = Cancel;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(0);
 const react_bootstrap_1 = __webpack_require__(56);
-const UUID = __webpack_require__(688);
+const UUID = __webpack_require__(692);
 class ClickableText extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -26576,7 +26581,7 @@ const react_router_redux_1 = __webpack_require__(167);
 __webpack_require__(331);
 __webpack_require__(334);
 const app_1 = __webpack_require__(336);
-const store_1 = __webpack_require__(692);
+const store_1 = __webpack_require__(696);
 const createBrowserHistory_1 = __webpack_require__(105);
 const history = createBrowserHistory_1.default();
 react_dom_1.render(React.createElement(react_redux_1.Provider, { store: store_1.default },
@@ -47336,7 +47341,7 @@ exports = module.exports = __webpack_require__(179)(undefined);
 
 
 // module
-exports.push([module.i, "*, h1, h2, h3, h4, h5 {\n  font-weight: 100; }\n\nbody {\n  margin: 0; }\n\nh4 {\n  color: #ced7d7;\n  font-weight: 100;\n  font-size: 15px;\n  text-align: center;\n  padding-top: 10px; }\n\n.grid-item-img:hover {\n  border: 10px solid #44b6df; }\n\n.grid-item-img {\n  border: 2px solid transparent; }\n\n.thumbnailOverlay {\n  position: relative;\n  float: left;\n  cursor: pointer; }\n\n.thumbnailOverlay:before {\n  content: \"\";\n  display: block;\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background: none;\n  -moz-transition: background .2s linear;\n  -webkit-transition: background .2s linear;\n  -o-transition: background .2s linear;\n  transition: background .2s linear; }\n\n.thumbnailOverlay:hover:before {\n  border: 5px solid #44b6df; }\n\n.thumbnailOverlay:active:before {\n  background: rgba(68, 182, 223, 0.36); }\n\n.clickableText:focus {\n  outline: 2px solid #027aff; }\n\n.deleteIcon:hover {\n  color: #f9b514; }\n", ""]);
+exports.push([module.i, "*, h1, h2, h3, h4, h5 {\n  font-weight: 100; }\n\nbody {\n  margin: 0; }\n\nh4 {\n  color: #ced7d7;\n  font-weight: 100;\n  font-size: 15px;\n  text-align: center;\n  padding-top: 10px; }\n\n.grid-item-img:hover {\n  border: 10px solid #44b6df; }\n\n.grid-item-img {\n  border: 2px solid transparent; }\n\n.thumbnailOverlay {\n  position: relative;\n  float: left;\n  cursor: pointer; }\n\n.thumbnailOverlay:before {\n  content: \"\";\n  display: block;\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background: none;\n  -moz-transition: background .2s linear;\n  -webkit-transition: background .2s linear;\n  -o-transition: background .2s linear;\n  transition: background .2s linear; }\n\n.thumbnailOverlay:hover:before {\n  border: 5px solid #44b6df; }\n\n.thumbnailOverlay:active:before {\n  background: rgba(68, 182, 223, 0.36); }\n\n.clickableText:focus {\n  outline: 2px solid #027aff; }\n\n.deleteIcon:hover {\n  color: #f9b514; }\n\n.tag {\n  padding: 1px 10px;\n  font-size: 12px;\n  font-weight: 400;\n  border-radius: 10px;\n  color: #ced7d7;\n  display: inline-block;\n  margin: 2px 5px;\n  transition: background-color 0.55s; }\n\n.tag-icon {\n  transition: color 0.25s;\n  cursor: pointer;\n  margin-left: 2px; }\n\n.tag-icon:hover {\n  transition: color 0.25s;\n  color: #4e4e4e; }\n\n.tag-add {\n  transition: background-color 0.55s;\n  border: 1px solid #2d3e4f; }\n\n.tag-add:hover {\n  transition: background-color 0.55s;\n  background-color: #7faddc; }\n\n.tag-add:active {\n  transition: background-color 0.55s;\n  background-color: #4e709a; }\n\n.sidebar {\n  position: fixed;\n  left: 0px;\n  color: #b5bfc4;\n  padding: 0px;\n  background-color: #1e2b32; }\n\n.sidebar > ul {\n  padding: 0px;\n  margin-bottom: 0px; }\n\n.sidebar > ul > li {\n  list-style-type: none;\n  padding: 5px; }\n\n.unselectedGroup {\n  transition: background-color 0.55s;\n  background-color: #24353f;\n  cursor: pointer; }\n\n.selectedGroup {\n  transition: background-color 0.55s;\n  background-color: #4e709a;\n  cursor: pointer; }\n\n.unselectedGroup:hover, .selectedGroup:hover {\n  transition: background-color 0.55s;\n  background-color: #00af8d; }\n\n.unselectedGroup:active, .selectedGroup:active {\n  transition: background-color 0.55s;\n  background-color: #00e2b7; }\n", ""]);
 
 // exports
 
@@ -47352,10 +47357,10 @@ const React = __webpack_require__(0);
 const navbar_1 = __webpack_require__(337);
 const login_1 = __webpack_require__(350);
 const music_1 = __webpack_require__(660);
-const profile_1 = __webpack_require__(686);
+const profile_1 = __webpack_require__(690);
 const react_router_dom_1 = __webpack_require__(72);
 const react_router_1 = __webpack_require__(34);
-const add_music_1 = __webpack_require__(691);
+const add_music_1 = __webpack_require__(695);
 const App = () => (React.createElement("div", null,
     React.createElement("main", null,
         React.createElement(navbar_1.default, null),
@@ -73039,6 +73044,7 @@ class Music extends React.Component {
     componentWillMount() {
         if (this.props.authorized) {
             this.props.retrieveMusic(this.props.authTokens.getIdToken().getJwtToken());
+            this.props.groups(this.props.authTokens.getIdToken().getJwtToken());
         }
     }
     pieceSelected(uid) {
@@ -73063,7 +73069,7 @@ class Music extends React.Component {
                     React.createElement(music_grid_1.default, { pieceSelected: this.pieceSelected.bind(this) })))));
     }
 }
-exports.default = react_redux_1.connect((state) => ({ authorized: state.auth.authorized, authTokens: state.auth.authTokens, searchText: state.music.searchText }), dispatch => redux_1.bindActionCreators({ searchTextChanged: music_service_1.searchTextChanged, retrieveMusic: music_service_1.retrieveMusic }, dispatch))(Music);
+exports.default = react_redux_1.connect((state) => ({ authorized: state.auth.authorized, authTokens: state.auth.authTokens, searchText: state.music.searchText }), dispatch => redux_1.bindActionCreators({ searchTextChanged: music_service_1.searchTextChanged, retrieveMusic: music_service_1.retrieveMusic, groups: music_service_1.groups }, dispatch))(Music);
 
 
 /***/ }),
@@ -74028,12 +74034,15 @@ exports.default = Artist;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 class Music {
-    constructor(uid, name, genre, number, opus) {
+    constructor(uid, name, genre, owner, number, opus, groups, tags) {
         this.uid = uid;
         this.genre = genre;
         this.number = number;
         this.opus = opus;
         this.name = name;
+        this.groups = groups;
+        this.tags = tags;
+        this.owner = owner;
     }
     pieceName() {
         let name = this.name;
@@ -74049,7 +74058,7 @@ class Music {
         return name;
     }
     static from(music) {
-        return new Music(music['uid'], music['name'], music['genre'], music['number'], music['opus']);
+        return new Music(music['uid'], music['name'], music['genre'], music['oid'], music['number'], music['opus'], music['groups'], music['tags']);
     }
 }
 exports.Music = Music;
@@ -74068,7 +74077,65 @@ const react_redux_1 = __webpack_require__(33);
 const music_service_1 = __webpack_require__(65);
 const music_piece_1 = __webpack_require__(684);
 class MusicGrid extends React.Component {
-    componentWillUpdate() {
+    componentWillMount() {
+        this.setState({ pieces: new Map() });
+    }
+    isSelected(uid) {
+        let selected = false;
+        if (this.state.pieces.has(uid))
+            selected = this.state.pieces.get(uid);
+        return selected;
+    }
+    anySelected() {
+        let s = false;
+        this.state.pieces.forEach((selected) => { if (selected)
+            s = true; });
+        return s;
+    }
+    setSelected(uid, selected) {
+        this.state.pieces.set(uid, selected);
+        let newMap = new Map();
+        this.state.pieces.forEach((value, key) => { console.log(key + ' -> ' + value); newMap.set(key, value); });
+        this.setState({ pieces: newMap });
+    }
+    groupsInSelection() {
+        if (this.props['music']) {
+            let groupSet = new Map();
+            let selectedPieces = this.props['music'].filter((music) => this.isSelected.bind(this)(music.uid));
+            selectedPieces.filter(piece => piece.groups).forEach(piece => piece.groups.forEach(group => {
+                if (!groupSet.has(group))
+                    groupSet.set(group, 1);
+                else
+                    groupSet.set(group, groupSet.get(group) + 1);
+            }));
+            return Array.from(groupSet).filter(([gid, count]) => count === selectedPieces.length).map(([gid, count]) => gid);
+        }
+        return [];
+    }
+    selectionChanged(uid, selected) {
+        this.setSelected(uid, selected);
+    }
+    groupSelected(gid, selected) {
+        let addGroup = (group, list) => {
+            if (list) {
+                list.push(group);
+                return list;
+            }
+            return [group];
+        };
+        let removeGroup = (group, list) => list ? list.filter(g => group !== g) : [];
+        if (this.props['music']) {
+            let piecesToUpdate = this.props['music'].filter(music => {
+                let hasGroupAlready = music.groups ? music.groups.filter(g => g === gid).length > 0 : false;
+                return this.isSelected.bind(this)(music.uid) && ((!selected && hasGroupAlready) || (selected && !hasGroupAlready));
+            });
+            let groupInfo;
+            if (selected)
+                groupInfo = piecesToUpdate.map(music => { return { mid: music.uid, groups: addGroup(gid, music.groups) }; });
+            else
+                groupInfo = piecesToUpdate.map(music => { return { mid: music.uid, groups: removeGroup(gid, music.groups) }; });
+            this.props['addPiecesToGroup'](gid, groupInfo, this.props['authTokens'].getIdToken().getJwtToken());
+        }
     }
     filterWith(filter, musicMap) {
         let pieceMatch = (piece) => piece.pieceName().toLowerCase().indexOf(filter) != -1;
@@ -74104,14 +74171,34 @@ class MusicGrid extends React.Component {
             return musicMap.map(([artist, musicList]) => React.createElement("div", { key: artist.uid + ' section', className: "row" },
                 React.createElement("div", { key: artist.uid + ' title', style: { width: '100%', borderBottom: '1px solid rgb(48, 59, 82)', padding: '10px', paddingTop: '30px', marginLeft: '20px' } },
                     React.createElement("h4", { style: { textAlign: 'left' } }, artist.name())),
-                musicList.map(music => React.createElement(music_piece_1.default, { key: music.uid, piece: music, thumbnail: music.thumbnail, thumbnailClicked: () => this.props.pieceSelected(music.uid) }))));
+                musicList.map(music => React.createElement("div", { key: music.uid + 'outer', className: "col-md-3 col-xs-6" },
+                    React.createElement(music_piece_1.default, { key: music.uid, piece: music, canSelect: music.owner === this.props['user'], thumbnail: music.thumbnail, thumbnailClicked: () => this.props.pieceSelected(music.uid), selectionChanged: this.selectionChanged.bind(this) })))));
         }
     }
+    groupSection() {
+        let groupsInSelection = this.groupsInSelection();
+        let inSelection = (gid) => groupsInSelection.filter(g => g === gid).length > 0;
+        let groupLi = (group) => {
+            let gid = group['actualGid'] ? group['actualGid'] : group.gid;
+            let isIn = inSelection(gid);
+            return (React.createElement("li", { key: gid, onClick: () => this.groupSelected.bind(this)(gid, !isIn), className: (isIn ? "" : "un") + "selectedGroup", style: {} }, group.name));
+        };
+        if (this.props['groupList'].ownedGroups.length > 0 && this.props['groupList'].joinedGroups.length > 0) {
+            return (React.createElement("nav", { className: "sidebar" },
+                React.createElement("h2", null, "Groups"),
+                React.createElement("ul", null,
+                    this.props['groupList'].ownedGroups.map(groupLi),
+                    this.props['groupList'].joinedGroups.map(groupLi))));
+        }
+        return React.createElement("div", null);
+    }
     render() {
-        return React.createElement("div", { className: "grid row col-12" }, this.filteredMusicList());
+        return React.createElement("div", { className: "grid row col-12" },
+            this.props['groupList'] && this.anySelected() ? this.groupSection() : React.createElement("div", null),
+            this.filteredMusicList());
     }
 }
-exports.default = react_redux_1.connect((state) => ({ authorized: state.auth.authorized, authTokens: state.auth.authTokens, searchText: state.music.searchText, music: state.music.music, thumbnails: state.music.thumbnails }), dispatch => redux_1.bindActionCreators({ searchTextChanged: music_service_1.searchTextChanged }, dispatch))(MusicGrid);
+exports.default = react_redux_1.connect((state) => ({ authorized: state.auth.authorized, user: state.auth.user, authTokens: state.auth.authTokens, searchText: state.music.searchText, music: state.music.music, thumbnails: state.music.thumbnails, groupList: state.music.groups }), dispatch => redux_1.bindActionCreators({ searchTextChanged: music_service_1.searchTextChanged, addPiecesToGroup: music_service_1.addPiecesToGroup }, dispatch))(MusicGrid);
 
 
 /***/ }),
@@ -74122,13 +74209,24 @@ exports.default = react_redux_1.connect((state) => ({ authorized: state.auth.aut
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(0);
-const pdfThumbnail = __webpack_require__(685);
+const tag_1 = __webpack_require__(685);
+const pdfThumbnail = __webpack_require__(689);
 class MusicPiece extends React.Component {
     componentWillMount() {
         this.setState({ selected: false });
     }
-    onClick() {
-        this.setState({ selected: !this.state.selected });
+    onClick(event) {
+        if (this.props.canSelect) {
+            let newSelected = !this.state.selected;
+            this.setState({ selected: newSelected });
+            this.props.selectionChanged(this.props.piece.uid, newSelected);
+        }
+        event.preventDefault();
+    }
+    onDoubleClick() {
+        this.setState({ selected: false });
+        this.props.selectionChanged(this.props.piece.uid, this.state.selected);
+        this.props.thumbnailClicked();
     }
     styleForThumbnail() {
         let style = {};
@@ -74138,11 +74236,15 @@ class MusicPiece extends React.Component {
         return style;
     }
     render() {
-        return React.createElement("div", { className: "grid-item col-md-3 col-xs-6", style: { padding: '10px', paddingLeft: '20px', backgroundColor: 'transparent' } },
+        return React.createElement("div", { className: "grid-item", style: { padding: '10px', paddingLeft: '20px', backgroundColor: 'transparent' } },
             React.createElement("div", { className: "thumbnail" },
-                React.createElement("figure", { onClick: this.props.thumbnailClicked, style: this.styleForThumbnail(), className: "thumbnailOverlay" },
+                React.createElement("figure", { onContextMenu: this.onClick.bind(this), onClick: this.onDoubleClick.bind(this), style: this.styleForThumbnail(), className: "thumbnailOverlay" },
                     React.createElement("img", { className: "grid-item-img", src: this.props.thumbnail ? 'data:image/png;base64,' + this.props.thumbnail : pdfThumbnail, width: "100%" })),
-                React.createElement("h4", null, this.props.piece.pieceName())));
+                React.createElement("h4", null, this.props.piece.pieceName())),
+            this.props.piece.tags && this.props.canSelect ?
+                this.props.piece.tags.map(tag => React.createElement(tag_1.default, { key: this.props.piece.uid + tag, text: tag }))
+                : React.createElement("div", null),
+            this.props.canSelect ? React.createElement(tag_1.default, { new: true }) : React.createElement("div", null));
     }
 }
 exports.default = MusicPiece;
@@ -74152,10 +74254,145 @@ exports.default = MusicPiece;
 /* 685 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "ca152f113fc9223c4eeda9a844889c2b.png";
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(0);
+const COLORS = __webpack_require__(686);
+const color = () => {
+    let color = COLORS();
+    while (color[0] + color[1] + color[2] > 400) {
+        color = COLORS();
+    }
+    return color[3];
+};
+const Tag = (props) => (React.createElement("div", { className: "tag" + (props.new ? " tag-add" : ""), title: props.new ? 'Add Tag' : '', style: props.new ? { cursor: 'pointer' } : { backgroundColor: color() } },
+    props.text,
+    props.new
+        ? React.createElement("i", { onClick: props.addClicked, className: "fa fa-plus" })
+        : React.createElement("i", { onClick: props.removeClicked, className: "fa fa-times tag-icon", title: 'Remove Tag' })));
+exports.default = Tag;
+
 
 /***/ }),
 /* 686 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// Dependencies
+var Colors = __webpack_require__(687),
+    ColorNames = __webpack_require__(688);
+
+/**
+ * FlatColors
+ * Finds the nearest flat color for rgb and hex inputs.
+ *
+ * @name FlatColors
+ * @function
+ * @param {String|Number|Array|undefined} r The color as string in hex format, the *red* value or the rgb passed as array. If `undefined`, a random color will be returned.
+ * @param {Number} g The green value.
+ * @param {Number} b The blue value.
+ * @return {Array} An array containing the rgb values of the flat color which was found.
+ */
+function FlatColors(r, g, b) {
+
+    if (r === undefined) {
+        return Colors[Math.floor(Math.random() * Colors.length)];
+    }
+
+    if (typeof r === "string" && r.charAt(0) === "#") {
+        return FlatColors(FlatColors.toRgb(r));
+    }
+
+    var rgb = Array.isArray(r) ? r : [r, g, b],
+        best = null;
+
+    for (var i = 0; i < Colors.length; ++i) {
+        var d = distance(Colors[i], rgb);
+        if (!best || d <= best.distance) {
+            best = { distance: d, index: i };
+        }
+    }
+
+    return Colors[best.index];
+}
+
+/**
+ * toRgb
+ * Converts a hex format color into rgb.
+ *
+ * @name toRgb
+ * @function
+ * @param {String} hex The color in the hex format.
+ * @return {Array|null} The rgb array or null.
+ */
+FlatColors.toRgb = function (hex) {
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
+};
+
+FlatColors.colors = Colors;
+FlatColors._ = ColorNames;
+
+function distance(a, b) {
+    return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
+}
+
+module.exports = FlatColors;
+
+/***/ }),
+/* 687 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = [[26, 188, 156, "#1abc9c", "turquoise"], [46, 204, 113, "#2ecc71", "emerland"], [52, 152, 219, "#3498db", "peter-river"], [155, 89, 182, "#9b59b6", "amethyst"], [52, 73, 94, "#34495e", "wet-asphalt"], [22, 160, 133, "#16a085", "green-sea"], [39, 174, 96, "#27ae60", "nephritis"], [41, 128, 185, "#2980b9", "belize-hole"], [142, 68, 173, "#8e44ad", "wisteria"], [44, 62, 80, "#2c3e50", "midnight-blue"], [241, 196, 15, "#f1c40f", "sun-flower"], [230, 126, 34, "#e67e22", "carrot"], [231, 76, 60, "#e74c3c", "alizarin"], [236, 240, 241, "#ecf0f1", "clouds"], [149, 165, 166, "#95a5a6", "concrete"], [243, 156, 18, "#f39c12", "orange"], [211, 84, 0, "#d35400", "pumpkin"], [192, 57, 43, "#c0392b", "pomegranate"], [189, 195, 199, "#bdc3c7", "silver"], [127, 140, 141, "#7f8c8d", "asbestos"]];
+
+/***/ }),
+/* 688 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    turquoise: "#1abc9c",
+    emerland: "#2ecc71",
+    peterRiver: "#3498db",
+    amethyst: "#9b59b6",
+    wetAsphalt: "#34495e",
+    greenSea: "#16a085",
+    nephritis: "#27ae60",
+    belizeHole: "#2980b9",
+    wisteria: "#8e44ad",
+    midnightBlue: "#2c3e50",
+    sunFlower: "#f1c40f",
+    carrot: "#e67e22",
+    alizarin: "#e74c3c",
+    clouds: "#ecf0f1",
+    concrete: "#95a5a6",
+    orange: "#f39c12",
+    pumpkin: "#d35400",
+    pomegranate: "#c0392b",
+    silver: "#bdc3c7",
+    asbestos: "#7f8c8d"
+};
+
+/***/ }),
+/* 689 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "ca152f113fc9223c4eeda9a844889c2b.png";
+
+/***/ }),
+/* 690 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74168,7 +74405,7 @@ const react_router_1 = __webpack_require__(34);
 const react_bootstrap_1 = __webpack_require__(56);
 const auth_service_1 = __webpack_require__(107);
 const music_service_1 = __webpack_require__(65);
-const group_1 = __webpack_require__(687);
+const group_1 = __webpack_require__(691);
 const clickable_text_1 = __webpack_require__(282);
 class Profile extends React.Component {
     componentWillMount() {
@@ -74229,7 +74466,7 @@ exports.default = react_redux_1.connect((state) => ({ authorized: state.auth.aut
 
 
 /***/ }),
-/* 687 */
+/* 691 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74287,11 +74524,11 @@ exports.default = Group;
 
 
 /***/ }),
-/* 688 */
+/* 692 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(689);
-var v4 = __webpack_require__(690);
+var v1 = __webpack_require__(693);
+var v4 = __webpack_require__(694);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -74301,7 +74538,7 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 689 */
+/* 693 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var rng = __webpack_require__(283);
@@ -74407,7 +74644,7 @@ module.exports = v1;
 
 
 /***/ }),
-/* 690 */
+/* 694 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var rng = __webpack_require__(283);
@@ -74442,7 +74679,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 691 */
+/* 695 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74538,7 +74775,7 @@ class AddArtists extends React.Component {
         this.setState({ newArtist: false });
     }
     artists() {
-        return Array.from(this.props.artists).map(([uid, artist]) => (React.createElement("option", { key: uid, value: uid }, artist.firstName + ' ' + artist.lastName)));
+        return this.props.artists.map(artist => (React.createElement("option", { key: artist.uid, value: artist.uid }, artist.firstName + ' ' + artist.lastName)));
     }
     newClicked() {
         this.setState({ newArtist: !this.state.newArtist });
@@ -74560,7 +74797,7 @@ class AddArtists extends React.Component {
 
 
 /***/ }),
-/* 692 */
+/* 696 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74568,9 +74805,9 @@ class AddArtists extends React.Component {
 Object.defineProperty(exports, "__esModule", { value: true });
 const redux_1 = __webpack_require__(26);
 const react_router_redux_1 = __webpack_require__(167);
-const redux_devtools_extension_1 = __webpack_require__(693);
+const redux_devtools_extension_1 = __webpack_require__(697);
 const createBrowserHistory_1 = __webpack_require__(105);
-const redux_thunk_1 = __webpack_require__(694);
+const redux_thunk_1 = __webpack_require__(698);
 const auth_service_1 = __webpack_require__(107);
 const music_service_1 = __webpack_require__(65);
 exports.history = createBrowserHistory_1.default();
@@ -74591,7 +74828,7 @@ exports.default = store;
 
 
 /***/ }),
-/* 693 */
+/* 697 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74618,7 +74855,7 @@ exports.devToolsEnhancer = (
 
 
 /***/ }),
-/* 694 */
+/* 698 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

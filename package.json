@@ -12,6 +12,7 @@
     "aws-sdk": "^2.166.0",
     "axios": "^0.17.1",
     "file-loader": "^1.1.5",
+    "flat-colors": "^3.3.8",
     "node-sass": "^4.7.2",
     "react": "^16.2.0",
     "react-bootstrap": "^0.31.5",

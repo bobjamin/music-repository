@@ -42,6 +42,7 @@ h4{
   transition: background .2s linear;
 }
 
+
 .thumbnailOverlay:hover:before {
   border: 5px solid rgb(68, 182, 223);
 }
@@ -55,4 +56,74 @@ h4{
 
 .deleteIcon:hover{
   color: #f9b514;
+}
+
+.tag {
+  padding: 1px 10px;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 10px;
+  color: #ced7d7;
+  display: inline-block;
+  margin: 2px 5px;
+  transition: background-color 0.55s;
+}
+
+.tag-icon {
+  transition: color 0.25s;
+  cursor: pointer;
+  margin-left: 2px;
+}
+
+.tag-icon:hover {
+  transition: color 0.25s;
+  color: #4e4e4e;
+}
+
+.tag-add{
+  transition: background-color 0.55s;
+  border: 1px solid #2d3e4f;
+}
+.tag-add:hover {
+  transition: background-color 0.55s;
+  background-color: #7faddc;
+}
+
+.tag-add:active {
+  transition: background-color 0.55s;
+  background-color: #4e709a;
+}
+
+.sidebar{
+  position: fixed;
+  left: 0px;
+  color: #b5bfc4;
+  padding: 0px;
+  background-color: #1e2b32;
+}
+.sidebar>ul{
+  padding: 0px;
+  margin-bottom: 0px;
+}
+.sidebar>ul>li{
+  list-style-type: none;
+  padding: 5px;
+}
+.unselectedGroup{
+  transition: background-color 0.55s;
+  background-color: #24353f;
+  cursor: pointer;
+}
+.selectedGroup{
+  transition: background-color 0.55s;
+  background-color: #4e709a;
+  cursor: pointer;
+}
+.unselectedGroup:hover, .selectedGroup:hover{
+  transition: background-color 0.55s;
+  background-color: #00af8d;
+}
+.unselectedGroup:active, .selectedGroup:active{
+  transition: background-color 0.55s;
+  background-color: #00e2b7;
 }
